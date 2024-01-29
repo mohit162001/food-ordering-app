@@ -8,21 +8,23 @@ import useHttp from "../Hooks/useHttp";
 
 const requestConfig = {
   method: "POST",
-  header: {
+  headers: {
     "Content-Type": "application/json",
   },
 };
 
 function CheckOut() {
-  const { items } = useContext(CartContext);
+  const { items, clearCart } = useContext(CartContext);
   const { progress, hideCheckOut } = useContext(UserProgressContext);
 
-  const { error, data, isLoading, sendResquest } = useHttp(
-    "http://localhost:3000/orders",
-    requestConfig
-  );
+  const {
+    error,
+    data,
+    isLoading: isSending,
+    sendResquest,
+    clearData
+  } = useHttp("http://localhost:3000/orders", requestConfig);
 
- 
   const cartTotal = items.reduce((total, item) => {
     return total + item.quantity * item.price;
   }, 0);
@@ -31,30 +33,49 @@ function CheckOut() {
     event.preventDefault();
 
     const fd = new FormData(event.target);
-    const data = Object.fromEntries(fd.entries());
-    sendResquest(
-        JSON.stringify({
-          order: {
-            items: items,
-            customer: data,
-          },
-        })
-      );
+    const customerData = Object.fromEntries(fd.entries());
+    console.log(data);
+    sendResquest(JSON.stringify({
+      order:{
+        items:items,
+        customer : customerData
+      }
+    }))
   }
+
+  function handleFinish(){
+    hideCheckOut()
+    clearCart()
+    clearData()
+  }
+
   let actions = (
     <>
-      <Button type="button" textOnly={true} onClick={() => hideCheckOut()}>
+      <Button type="button" textOnly={true} onClick={hideCheckOut}>
         Close
       </Button>
-      <Button>Submit</Button>
+      <Button >Submit</Button>
     </>
   );
 
-  if(isLoading){
-    actions = <span>Sending Order Data...</span>
+  if (isSending) {
+    actions = <span>Sending Order Data...</span>;
+  }
+
+  if(data && !error){
+    return <Modal open={progress==='checkout'}>
+      <h2>Success!</h2>
+      <p>Your order submitted successfully</p>
+      <p className="modal-actions">
+        <Button onClick={handleFinish}>Okay</Button>
+      </p>
+    </Modal>
   }
   return (
-    <Modal open={progress === "checkout"}>
+    <Modal
+      open={progress === "checkout"}
+      onClose={progress === "checkout" ? hideCheckOut : null}
+    >
       <form onSubmit={handleSubmit}>
         <h2>CheckOut</h2>
         <p>Total amount: ${cartTotal} </p>
@@ -67,7 +88,7 @@ function CheckOut() {
           <Input lable="City" type="text" id="city" />
         </div>
 
-        {error && <Error title={"failed to send data"} message={error} />}
+       
         <p className="modal-actions">{actions}</p>
       </form>
     </Modal>

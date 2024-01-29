@@ -11,10 +11,9 @@ function Cart() {
   const cartTotal = items.reduce((total, item) => {
     return total + item.quantity * item.price;
   }, 0);
-  console.log(items);
   return (
-    <Modal className="cart" open={progress === "cart"}>
-      <h2>Your Cart</h2>
+    <Modal className="cart" open={progress === "cart"} onClose={progress ==='cart'?hideCart:null}>\
+    <h2>Your Cart</h2>
       <ul>
         {items.map((item) => {
           return (
@@ -34,8 +33,9 @@ function Cart() {
         <Button onClick={() => hideCart()} textOnly>
           Close
         </Button>
-       {items.length>0 ? <Button onClick={()=>showCheckOut()}>Go to Checkout</Button>:null}
+       {items.length>0 ? <Button onClick={showCheckOut}>Go to Checkout</Button>:null}
       </p>
+ 
     </Modal>
   );
 }

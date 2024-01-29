@@ -1,7 +1,7 @@
 import React from 'react'
 
 function CartItem({name,quantity,price,increase,decrease}) {
-console.log(name,price,quantity)
+
     return (
     <li className='cart-item'>
         <p>

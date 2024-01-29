@@ -1,24 +1,30 @@
 import { useCallback, useEffect, useState } from "react";
 
-export async function sendHttpRequest(url, config) {
+async function sendHttpRequest(url, config) {
   const response = await fetch(url, config);
-  const data = await response.json();
-
+  const resData = await response.json();
+  console.log('response',resData)
   if (!response.ok) {
     throw new Error(data.message || "something went wrong");
   }
-  return data;
+  return resData;
 }
-function useHttp(url, config) {
-  const [data, setData] = useState([]);
+
+//custom hook
+function useHttp(url, config,initialData) {
+  const [data, setData] = useState(initialData);
   const [error, setError] = useState(); 
   const [isLoading, setIsLoading] = useState(false);
+
+  function clearData(){
+    setData(initialData);
+  }
 
   const sendResquest = useCallback(
     async function sendRequest(data) {
       setIsLoading(true);
       try {
-        const resData = await sendHttpRequest(url, {...config,boby: data});
+        const resData = await sendHttpRequest(url, {...config,body: data});
         setData(resData);
       } catch (error) {
         setError(error.message || "Something wrong !");
@@ -32,12 +38,14 @@ function useHttp(url, config) {
     if (config && (config.method === "GET" || !config.method) || !config) {
       sendResquest();
     }
-  }, [sendResquest]);
+  }, [sendResquest,config]);
+
   return {
     data,
     isLoading,
     error,
     sendResquest,
+    clearData
   };
 }
 

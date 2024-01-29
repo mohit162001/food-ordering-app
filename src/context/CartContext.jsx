@@ -28,6 +28,8 @@ function cartReducer(state,action){
         }
         return {...state, items: updatedItems};
     }
+
+
     if(action.type==='remove_item'){
         const existingCartItemIndex = state.items.findIndex(
             (item)=>{
@@ -37,7 +39,6 @@ function cartReducer(state,action){
         const existingCartItem = state.items[existingCartItemIndex];
         const updatedItems = [...state.items]
         if(existingCartItem.quantity ===1){
-            const updatedItems = [...state.items];
             updatedItems.splice(existingCartItemIndex,1);
         }else{
             const updatedItem = {
@@ -48,6 +49,8 @@ function cartReducer(state,action){
         }
         return {...state,items:updatedItems}
     }
+
+    
     if(action.type === 'clear_cart'){
         return {...state,items:[]}
     }

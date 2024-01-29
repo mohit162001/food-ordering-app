@@ -10,7 +10,7 @@ async function sendHttpRequest(url, config) {
   return resData;
 }
 
-//custom hook
+//custom hoook
 function useHttp(url, config,initialData) {
   const [data, setData] = useState(initialData);
   const [error, setError] = useState(); 
@@ -33,6 +33,7 @@ function useHttp(url, config,initialData) {
     },
     [url, config]
   );
+ 
 
   useEffect(() => {
     if (config && (config.method === "GET" || !config.method) || !config) {
